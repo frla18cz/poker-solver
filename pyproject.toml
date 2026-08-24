@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pokersolver"
+version = "0.1.0"
+description = "Deterministic poker math: equity, ranges, precomputed preflop matrices and CFR solvers"
+readme = "README.md"
+requires-python = ">=3.14"
+license = "MIT"
+license-files = ["LICENSE"]
+# Core is deliberately stdlib-only — embeddable anywhere.
+dependencies = []
+
+[project.optional-dependencies]
+# Multiway CFR is the only component requiring numpy.
+cfr = ["numpy>=2.0"]
+dev = ["pytest>=8.0", "numpy>=2.0"]
+
+[project.scripts]
+pokersolver-aof = "pokersolver.aof.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"pokersolver.ranges.gto" = ["data/*.json", "data/*.md"]

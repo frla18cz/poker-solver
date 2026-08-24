@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>pokersolver — deterministic poker math as a library</title>
+<meta name="description" content="Card evaluation, Monte Carlo equity against weighted ranges, precomputed preflop matrices and CFR solvers. Core is stdlib-only.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://frla18cz.github.io/poker-solver/">
+<meta property="og:title" content="pokersolver — deterministic poker math as a library">
+<meta property="og:description" content="Equity, ranges, 825 precomputed preflop spots and CFR solvers. It takes cards and returns numbers.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="pokersolver — deterministic poker math as a library">
+<meta name="twitter:description" content="Equity, ranges, 825 precomputed preflop spots and CFR solvers. It takes cards and returns numbers.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+<h1>pokersolver</h1>
+<p class="tag">Deterministic poker math as a library.</p>
+<nav class="nav">
+  <a href="https://github.com/frla18cz/poker-solver">Repository</a>
+  <a href="#install">Install</a>
+  <a href="#use">Use</a>
+  <a href="#limits">Limits</a>
+  <a href="https://github.com/frla18cz/poker-arena">A table for it</a>
+</nav>
+
+<p>Card evaluation, Monte Carlo equity against weighted ranges, the 169-hand
+grid, precomputed preflop matrices, and CFR solvers for all-in-or-fold and
+multiway postflop spots.</p>
+
+<p>The library has no notion of “a player to act” and no game-state type of its
+own. It takes primitives — cards, stacks in big blinds, positions as strings —
+and returns numbers. Wiring it to an engine is the caller’s job.</p>
+
+<h2 id="install">Install</h2>
+<pre><code>git clone https://github.com/frla18cz/poker-solver
+cd poker-solver
+pip install -e '.[dev]'</code></pre>
+<p class="dim">Requires Python 3.14+. The core is stdlib-only; numpy is needed
+only for the multiway CFR.</p>
+
+<h2 id="use">Use</h2>
+<pre><code>from pokersolver.cards import best_hand
+from pokersolver.equity import equity_vs_range
+from pokersolver.ranges.hand_grid import hand_class
+from pokersolver.ranges.gto import default_multi_solutions
+
+hand_class("As", "Kh")                  # 'AKo'
+solutions = default_multi_solutions()   # precomputed preflop matrices
+spot = solutions.for_stack(100).for_open(2.5).get_or_none("btn_vs_co")</code></pre>
+
+<h2>What is in it</h2>
+<table>
+<tr><th>Module</th><th>What it does</th></tr>
+<tr><td><code>cards</code></td><td>deck, 7-card hand scoring, <code>best_hand</code></td></tr>
+<tr><td><code>equity</code></td><td>Monte Carlo equity, incl. against weighted ranges</td></tr>
+<tr><td><code>ranges</code></td><td>the 169 hand classes, range parsing, preflop matrices</td></tr>
+<tr><td><code>aof</code></td><td>all-in-or-fold CFR solvers</td></tr>
+<tr><td><code>multiway</code></td><td>multiway postflop CFR (needs numpy)</td></tr>
+</table>
+
+<h2 id="limits">What it does not do</h2>
+<ul>
+<li>No game state, no player to act, no engine.</li>
+<li>Monte Carlo equity is sampled, not exact. More iterations buy precision;
+the sampling error does not go away.</li>
+<li>The multiway CFR abstracts the game — one fixed bet sizing, at most one
+re-raise per round, board runs out once the action closes. Every result
+reports its own <code>limitations</code>; read them before trusting a number.</li>
+<li>The shipped matrices are one dataset at three stack depths, not a solved
+game. Point <code>PF_GTO_DATA_DIR</code> elsewhere to swap them.</li>
+</ul>
+
+<h2>A table for it</h2>
+<p>Because the library cannot deal a hand or take a turn,
+<a href="https://github.com/frla18cz/poker-arena">pokerarena</a> is the project
+that does — a poker table you sit at in a browser, with friends or bots. Its
+<code>solver</code> seat is this library wired to an engine.</p>
+
+<footer>
+MIT licence · <a href="https://github.com/frla18cz/poker-solver">github.com/frla18cz/poker-solver</a>
+</footer>
+
+</div>
+</body>
+</html>
